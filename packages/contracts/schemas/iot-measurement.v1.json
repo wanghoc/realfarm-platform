@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "realfarm.iot-measurement.v1",
+  "title": "IoT Measurement v1",
+  "type": "object",
+  "required": [
+    "messageId",
+    "deviceId",
+    "sensorType",
+    "value",
+    "unit",
+    "measuredAt",
+    "quality"
+  ],
+  "properties": {
+    "messageId": {
+      "type": "string"
+    },
+    "deviceId": {
+      "type": "string"
+    },
+    "plotId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "sensorType": {
+      "type": "string",
+      "enum": [
+        "air_temperature",
+        "air_humidity",
+        "soil_moisture",
+        "light",
+        "ph"
+      ]
+    },
+    "value": {
+      "type": "number"
+    },
+    "unit": {
+      "type": "string"
+    },
+    "measuredAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "quality": {
+      "type": "string",
+      "enum": [
+        "valid",
+        "suspect",
+        "invalid"
+      ]
+    },
+    "signature": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "realfarm.work-order.v1",
+  "title": "Work Order v1",
+  "type": "object",
+  "required": [
+    "workOrderId",
+    "status",
+    "priority",
+    "items",
+    "createdAt"
+  ],
+  "properties": {
+    "workOrderId": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "assigned",
+        "accepted",
+        "in_progress",
+        "completed",
+        "verified",
+        "blocked",
+        "cancelled"
+      ]
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "normal",
+        "high",
+        "urgent"
+      ]
+    },
+    "assigneeId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "dueFrom": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "dueTo": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "plotId",
+          "cropCycleId",
+          "taskType"
+        ],
+        "properties": {
+          "plotId": {
+            "type": "string"
+          },
+          "cropCycleId": {
+            "type": "string"
+          },
+          "taskType": {
+            "type": "string"
+          },
+          "sourceRequestId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false
+}

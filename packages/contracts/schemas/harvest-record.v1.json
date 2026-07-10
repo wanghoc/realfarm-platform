@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "realfarm.harvest-record.v1",
+  "title": "Harvest Record v1",
+  "type": "object",
+  "required": [
+    "harvestId",
+    "cropCycleId",
+    "leaseId",
+    "harvestedAt",
+    "totalWeightKg",
+    "acceptedWeightKg",
+    "safetyStatus"
+  ],
+  "properties": {
+    "harvestId": {
+      "type": "string"
+    },
+    "cropCycleId": {
+      "type": "string"
+    },
+    "leaseId": {
+      "type": "string"
+    },
+    "harvestedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "totalWeightKg": {
+      "type": "number",
+      "minimum": 0
+    },
+    "acceptedWeightKg": {
+      "type": "number",
+      "minimum": 0
+    },
+    "rejectedWeightKg": {
+      "type": "number",
+      "minimum": 0
+    },
+    "safetyStatus": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "accepted",
+        "held",
+        "rejected"
+      ]
+    },
+    "evidenceIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

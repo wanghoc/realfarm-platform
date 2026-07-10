@@ -1,0 +1,64 @@
+# Environment
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+dist/
+build/
+*.egg-info/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+.next/
+vite.config.*.timestamp-*
+coverage/
+
+# IDE and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Data and media
+data/
+datasets/
+models/
+artifacts/
+uploads/
+recordings/
+*.pt
+*.pth
+*.onnx
+*.joblib
+*.pkl
+
+# Secrets and infrastructure state
+*.key
+*.pem
+*.crt
+crypto-config/
+organizations/
+channel-artifacts/
+terraform.tfstate*
+*.tfvars
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+backups/
+
+# Logs
+*.log
+logs/

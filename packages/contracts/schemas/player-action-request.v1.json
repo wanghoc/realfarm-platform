@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "realfarm.player-action-request.v1",
+  "title": "Player Action Request v1",
+  "type": "object",
+  "required": [
+    "requestId",
+    "playerId",
+    "leaseId",
+    "plotId",
+    "cropCycleId",
+    "actionType",
+    "requestedAt"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string"
+    },
+    "playerId": {
+      "type": "string"
+    },
+    "leaseId": {
+      "type": "string"
+    },
+    "plotId": {
+      "type": "string"
+    },
+    "cropCycleId": {
+      "type": "string"
+    },
+    "actionType": {
+      "type": "string"
+    },
+    "parameters": {
+      "type": "object"
+    },
+    "requestedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "idempotencyKey": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": false
+}
