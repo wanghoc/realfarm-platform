@@ -1,0 +1,31 @@
+name: CI - Simulator
+
+on:
+  pull_request:
+    paths:
+      - "backend/services/simulator/**"
+      - ".github/workflows/ci-simulator.yml"
+
+jobs:
+  lint-and-import:
+    name: Lint & Import Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/services/simulator/requirements.txt
+
+      - name: Install dependencies
+        working-directory: backend/services/simulator
+        run: pip install -r requirements.txt
+
+      - name: Verify simulator imports
+        working-directory: backend/services/simulator
+        run: python -c "import src.main; print('Simulator import OK')"

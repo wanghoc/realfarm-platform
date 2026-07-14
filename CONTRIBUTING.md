@@ -49,7 +49,7 @@ A pull request should:
 - reference the task or issue;
 - explain the user-visible behavior;
 - list important technical decisions;
-- include tests;
+- include validation notes;
 - include screenshots for UI changes;
 - note migrations and environment changes;
 - stay focused;
@@ -65,7 +65,7 @@ Review in this order:
 1. safety and business-rule correctness;
 2. authorization and data isolation;
 3. state transitions and failure recovery;
-4. tests;
+4. validation;
 5. maintainability;
 6. style.
 

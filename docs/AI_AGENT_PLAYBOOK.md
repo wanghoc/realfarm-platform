@@ -11,7 +11,7 @@ Use this checklist:
 [ ] I checked related contracts and ADRs.
 [ ] I know the authorization rule.
 [ ] I know the failure behavior.
-[ ] I know which tests prove the change.
+[ ] I know which validation steps prove the change.
 ```
 
 ## Preferred task response
@@ -22,7 +22,7 @@ An agent working in the repository should provide:
 2. **Plan**
 3. **Files to change**
 4. **Implementation**
-5. **Tests**
+5. **Validation**
 6. **Risks/assumptions**
 
 ## Avoid

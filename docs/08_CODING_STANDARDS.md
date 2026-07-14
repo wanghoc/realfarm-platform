@@ -3,7 +3,7 @@
 ## General
 
 - Prefer simple, explicit code.
-- Keep business rules deterministic and testable.
+- Keep business rules deterministic and easy to validate.
 - Avoid speculative abstractions.
 - Reject invalid state transitions explicitly.
 - Never use UI state as the source of truth.
@@ -17,8 +17,7 @@
 - Use async only where it provides real I/O benefit.
 - Use Pydantic schemas at boundaries.
 - Keep SQLAlchemy models separate from API schemas and domain objects.
-- Use Ruff for linting/formatting when tool configuration is added.
-- Use Pytest for tests.
+- Use Ruff for linting and formatting.
 - Raise domain-specific exceptions and map them at the API boundary.
 
 Suggested layout:
@@ -31,7 +30,6 @@ app/
       application/
       infrastructure/
       api/
-      tests/
 ```
 
 ## TypeScript
@@ -42,6 +40,7 @@ app/
 - Use feature modules.
 - Validate external payloads.
 - Do not duplicate backend business rules as authoritative frontend rules.
+- Keep validation scripts or smoke checks close to the feature when repeatability matters.
 
 ## Database
 

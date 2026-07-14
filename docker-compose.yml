@@ -1,2 +1,86 @@
-# Skeleton only. Add pinned images and health checks when implementation starts.
-services: {}
+services:
+  db:
+    image: timescale/timescaledb:latest-pg16
+    container_name: realfarm-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-realfarm}
+      POSTGRES_USER: ${POSTGRES_USER:-realfarm}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change_me}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-realfarm}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mqtt:
+    image: eclipse-mosquitto:2
+    container_name: realfarm-mqtt
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./infra/mqtt/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+    healthcheck:
+      test: ["CMD", "mosquitto_pub", "-h", "localhost", "-t", "health", "-m", "ping", "-q", "0"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: realfarm-backend
+    env_file: .env
+    environment:
+      POSTGRES_HOST: db
+      MQTT_HOST: mqtt
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      mqtt:
+        condition: service_healthy
+    develop:
+      watch:
+        - action: sync
+          path: ./backend
+          target: /app
+          ignore:
+            - __pycache__/
+            - "*.pyc"
+
+  frontend:
+    image: node:20-alpine
+    container_name: realfarm-frontend
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_BASE_URL: http://localhost:8000
+    depends_on:
+      - backend
+
+  simulator:
+    build:
+      context: ./backend/services/simulator
+      dockerfile: Dockerfile
+    container_name: realfarm-simulator
+    env_file: .env
+    environment:
+      MQTT_HOST: mqtt
+    depends_on:
+      mqtt:
+        condition: service_healthy
+
+volumes:
+  db_data:
