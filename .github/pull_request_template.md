@@ -16,9 +16,9 @@ Closes #
 
 ## Validation
 
-- [ ] Unit tests
-- [ ] Integration tests
-- [ ] API/contract tests
+- [ ] Backend validation
+- [ ] Frontend validation
+- [ ] API/contract validation
 - [ ] Manual UI verification
 - [ ] Authorization checked
 - [ ] Failure behavior checked

@@ -14,7 +14,7 @@
 
 ## API/contracts
 
-## Test plan
+## Validation plan
 
 ## Out of scope
 

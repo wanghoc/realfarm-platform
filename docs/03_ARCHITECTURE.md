@@ -38,7 +38,20 @@ flowchart LR
 
 ## Backend modules
 
-The backend is one deployable application with explicit internal modules:
+The backend contains the FastAPI application and backend-adjacent services.
+
+```text
+backend/
+  app/                 # FastAPI modular monolith
+  alembic/             # database migrations
+  services/
+    simulator/         # mandatory MQTT simulator
+    gateway/           # real IoT gateway bridge
+    firmware/          # ESP32 firmware workspace
+    ai-service/        # separate AI inference runtime
+```
+
+The FastAPI application is one deployable application with explicit internal modules:
 
 - `auth`
 - `users`
@@ -66,7 +79,7 @@ Modules communicate through application interfaces and domain events, not direct
 
 The team is small, the schedule is short, and most business rules are still evolving. A modular monolith reduces deployment and debugging cost while preserving boundaries for later extraction.
 
-The AI service remains separate because model runtime, dependencies, and scaling differ from transactional business logic.
+The AI service remains separate at runtime because model runtime, dependencies, and scaling differ from transactional business logic. It lives under `backend/services/ai-service` in the repository because it is owned by the backend/automation side of the platform.
 
 ## Realtime behavior
 
