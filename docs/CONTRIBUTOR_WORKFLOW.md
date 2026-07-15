@@ -12,6 +12,34 @@ It **complements** and does not replace:
 
 Each numbered step below links to the authoritative rule so this file stays short.
 
+## Start of day — sync your clone
+
+Run this once at the start of each working session, before step 0. Skipping it is the
+usual cause of avoidable rework: rebuilding what a teammate already merged, branching off
+a stale `main`, or working from an issue checklist that has since changed.
+
+```bash
+git fetch --all --prune              # refresh remote refs, drop deleted ones
+git checkout main
+git log --oneline main..origin/main  # what is about to land (empty = already current)
+git pull                             # fast-forward main
+```
+
+Then, before picking up work:
+
+1. **Read what merged.** If the log above touches your module or
+   `packages/contracts/schemas/*`, read the diff — a merged contract change can
+   invalidate work already in progress.
+2. **Rebase branches you already have open** so your PR does not drift:
+   `git checkout <branch> && git rebase main`. Resolve conflicts now rather than at merge
+   time. Tell the reviewer first if the branch is already under review (`AGENTS.md` §4).
+3. **Re-read your issue.** Acceptance criteria and open questions get edited by
+   teammates; the checklist you remember may be stale.
+4. **Clear review requests waiting on you** (`gh pr status`). Unblocking a teammate's PR
+   takes minutes and outranks starting new work.
+5. **Prune merged local branches.** `git branch -vv` marks them `: gone]` after the
+   fetch above.
+
 ## 0. Before you start — load context
 
 1. Read in `AGENTS.md` §1 order: `docs/00`–`04`, the target module's `README.md`, and
@@ -118,7 +146,7 @@ never mark an item or the card as complete while review or validation is still p
 ## Quick reference
 
 ```text
-context (AGENTS §1)  →  branch off main  →  implement (smallest change)
-  →  validate (docs/09)  →  conventional commit  →  push  →  PR (Closes #, template)
-  →  ≥1 review (priority order)  →  squash merge  →  board Done
+sync (fetch + pull + rebase)  →  context (AGENTS §1)  →  branch off main
+  →  implement (smallest change)  →  validate (docs/09)  →  conventional commit  →  push
+  →  PR (Closes #, template)  →  ≥1 review (priority order)  →  squash merge  →  board Done
 ```
