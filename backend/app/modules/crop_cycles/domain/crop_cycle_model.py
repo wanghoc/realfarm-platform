@@ -14,6 +14,7 @@ from app.core.database import Base
 
 class CropCycleStatus(str, enum.Enum):
     """States of a CropCycle."""
+
     PLANNED = "planned"
     PLANTED = "planted"
     GROWING = "growing"
@@ -28,23 +29,24 @@ class CropCycle(Base):
     """
     Represents one crop lifecycle on one plot.
     """
+
     __tablename__ = "crop_cycles"
 
-    id: Mapped[str] = mapped_column(
-        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
-    )
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     plot_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
     lease_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
     crop_catalog_id: Mapped[str] = mapped_column(String(36), nullable=False)
-    
+
     status: Mapped[CropCycleStatus] = mapped_column(
         String(50), nullable=False, default=CropCycleStatus.PLANNED
     )
-    
+
     planted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    expected_harvest_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    expected_harvest_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
     harvested_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
@@ -60,7 +62,7 @@ class CropCycle(Base):
     def plant(self) -> None:
         """
         Move from PLANNED to PLANTED.
-        Must be validated against business rule: 
+        Must be validated against business rule:
         'A plot MUST NOT have more than one active crop cycle at the same time.'
         """
         if self.status != CropCycleStatus.PLANNED:
