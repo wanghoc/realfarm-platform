@@ -53,7 +53,9 @@ Then, before picking up work:
 - Branch from an up-to-date `main`. **Never commit to or push `main`** (`AGENTS.md` §4).
 - Name it `<type>/<issue>-<short-name>`, e.g. `feat/23-watering-policy`.
 - Types: `feat` `fix` `docs` `refactor` `chore` `test` (`CONTRIBUTING.md`).
-- CI (`.github/workflows/pr-checks.yml`) rejects branch names that break this pattern.
+- Nothing checks this automatically — the workflow that used to reject bad branch names
+  was removed in #63, so the convention is now self-enforced. Getting it wrong no longer
+  fails CI; it just makes the branch harder for everyone else to read.
 
 ```bash
 git checkout main && git pull
@@ -96,7 +98,8 @@ the behavior, and no safety invariant is bypassed.
 git push -u origin <branch>
 ```
 
-Open a PR into `main` using `.github/pull_request_template.md`. The PR MUST:
+Open a PR into `main` using `.github/pull_request_template.md`. Delete the template
+sections that do not apply to your change instead of filling them with "N/A". The PR MUST:
 
 - reference the issue with `Closes #<issue>`;
 - describe the user-visible behavior and key decisions;
@@ -104,7 +107,13 @@ Open a PR into `main` using `.github/pull_request_template.md`. The PR MUST:
 - note migrations and environment changes;
 - stay focused — one PR solves one task or one tightly related group.
 
-The PR **title** must follow Conventional Commits; CI validates the title and branch name.
+The PR **title** must follow Conventional Commits and be written in **English**
+(`AGENTS.md` §5), like the commit messages. The PR **description** may be in Vietnamese —
+it is the part the team reads to review, and `AGENTS.md` §5 does not require English for
+it. Keep identifiers, field names, enum values, and file paths in English inside it, so
+they stay greppable.
+
+Nothing enforces the title format either: the workflow that checked it was removed in #63.
 
 You may create the PR from the GitHub web UI or with the GitHub CLI:
 
