@@ -32,13 +32,24 @@ accountability; a human assigns and completes them (`docs/05_ACTORS_AND_PERMISSI
 
 ## 3. State machine
 
-States and priority match `packages/contracts/schemas/work-order.v1.json`.
+The happy path and `priority` match `packages/contracts/schemas/work-order.v1.json`.
 
 ```text
 draft → assigned → accepted → in_progress → completed → verified
 ```
 
 Alternative terminal / exception states: `rejected`, `cancelled`, `blocked`.
+
+> **Known drift — `rejected` is not in the contract.** The states above follow
+> `docs/04_DOMAIN_MODEL.md`, which lists `rejected` as a WorkOrder alternative state.
+> The `status` enum in `work-order.v1.json` is
+> `draft|assigned|accepted|in_progress|completed|verified|blocked|cancelled` — it has no
+> `rejected`. The contract and the domain model contradict each other, and this document
+> follows the domain model.
+>
+> This must be resolved before the `work_orders` migration is written: either widen the
+> contract enum, or drop `rejected` from the domain model and represent a declined
+> assignment as `assigned → draft` with a reason. Tracked as open question §9.6 below.
 
 ```mermaid
 stateDiagram-v2
@@ -141,3 +152,6 @@ Tracked against `docs/13_ASSUMPTIONS_AND_OPEN_QUESTIONS.md`:
    (Actors) — relates to `docs/05_ACTORS_AND_PERMISSIONS.md`.
 5. Does the MVP need a distinct `assigned` → `accepted` acknowledgement step, or can a
    single operator auto-accept their own assignments to reduce clicks?
+6. **`rejected` is missing from the `work-order.v1` `status` enum (§3)** — widen the
+   contract, or drop the state from `docs/04_DOMAIN_MODEL.md`? Blocks the `work_orders`
+   migration. (Học)
