@@ -29,7 +29,10 @@ Use manual smoke checks for the flows that matter most:
 2. browse plots;
 3. open the farm and dashboard views;
 4. submit a player action request;
-5. confirm the response state is accepted, scheduled, rejected, expired, or completed;
+5. confirm the response state is accepted, scheduled, rejected, expired, or completed —
+   these are the five **player display** values required by `AGENTS.md` §7, not the six
+   policy outcomes returned by the API. `docs/19_STATE_VOCABULARY.md` §5 maps one onto
+   the other; a decision of `requires_expert_review` is expected to show as `scheduled`;
 6. confirm the simulator still publishes telemetry;
 7. confirm the API docs remain reachable.
 
