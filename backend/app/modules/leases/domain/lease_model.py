@@ -6,7 +6,7 @@ import enum
 import uuid
 from datetime import UTC, datetime
 
-from sqlalchemy import DateTime, String, func, Index, text, Enum as SqlEnum
+from sqlalchemy import DateTime, Enum as SqlEnum, Index, String, func, text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.database import Base
@@ -53,10 +53,10 @@ class Lease(Base):
 
     __table_args__ = (
         Index(
-            "ix_leases_active_plot", 
-            "plot_id", 
-            unique=True, 
-            sqlite_where=text("status = 'active'"), 
+            "ix_leases_active_plot",
+            "plot_id",
+            unique=True,
+            sqlite_where=text("status = 'active'"),
             postgresql_where=text("status = 'active'")
         ),
     )
@@ -102,11 +102,11 @@ class Lease(Base):
         """
         if self.status != LeaseStatus.PENDING_PAYMENT_OR_APPROVAL:
             raise ValueError(f"Cannot activate lease from status {self.status}")
-            
+
         for lease in existing_leases:
             if lease.id != self.id and lease.status == LeaseStatus.ACTIVE:
                 raise ValueError(f"Plot {self.plot_id} already has an active lease.")
-                
+
         self.status = LeaseStatus.ACTIVE
         self.start_time = datetime.now(UTC)
 

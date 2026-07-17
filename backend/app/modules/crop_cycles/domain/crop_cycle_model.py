@@ -6,7 +6,7 @@ import enum
 import uuid
 from datetime import UTC, datetime
 
-from sqlalchemy import DateTime, String, func, Index, text, Enum as SqlEnum
+from sqlalchemy import DateTime, Enum as SqlEnum, Index, String, func, text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.database import Base
@@ -34,10 +34,10 @@ class CropCycle(Base):
 
     __table_args__ = (
         Index(
-            "ix_crop_cycles_active_plot", 
-            "plot_id", 
-            unique=True, 
-            sqlite_where=text("status NOT IN ('closed', 'failed', 'cancelled')"), 
+            "ix_crop_cycles_active_plot",
+            "plot_id",
+            unique=True,
+            sqlite_where=text("status NOT IN ('closed', 'failed', 'cancelled')"),
             postgresql_where=text("status NOT IN ('closed', 'failed', 'cancelled')")
         ),
     )
@@ -77,7 +77,7 @@ class CropCycle(Base):
         """
         if self.status != CropCycleStatus.PLANNED:
             raise ValueError(f"Cannot plant from status {self.status}")
-            
+
         terminal_states = {
             CropCycleStatus.CLOSED,
             CropCycleStatus.FAILED,
@@ -86,7 +86,7 @@ class CropCycle(Base):
         for cycle in existing_cycles:
             if cycle.id != self.id and cycle.status not in terminal_states:
                 raise ValueError(f"Plot {self.plot_id} already has an active crop cycle.")
-                
+
         self.status = CropCycleStatus.PLANTED
         self.planted_at = datetime.now(UTC)
 
