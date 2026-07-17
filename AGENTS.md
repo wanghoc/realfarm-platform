@@ -49,12 +49,7 @@ Do not perform broad refactors unless the task explicitly requires them.
 
 - Never push directly to `main`.
 - Use short-lived branches:
-  - `feat/<issue>-<name>`
-  - `fix/<issue>-<name>`
-  - `docs/<issue>-<name>`
-  - `refactor/<issue>-<name>`
-  - `test/<issue>-<name>`
-  - `chore/<issue>-<name>`
+  - Format: `<name>/task-XX-short-description` (e.g., `antigravity/task-42-plot-lease`)
 - Use Conventional Commits:
   - `feat: add plot lease activation`
   - `fix: reject unsafe watering request`

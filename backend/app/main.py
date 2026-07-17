@@ -23,6 +23,8 @@ from app.modules.auth.domain.refresh_token_model import RefreshToken  # noqa: F4
 # Import all ORM models so that Base.metadata knows about them
 # before create_all / Alembic runs.
 from app.modules.auth.domain.user_model import User  # noqa: F401
+from app.modules.leases.domain.lease_model import Lease  # noqa: F401
+from app.modules.crop_cycles.domain.crop_cycle_model import CropCycle  # noqa: F401
 from app.modules.automation.api.router import router as automation_router
 from app.modules.care_logs.api.router import router as care_logs_router
 from app.modules.crop_catalog.api.router import router as crop_catalog_router

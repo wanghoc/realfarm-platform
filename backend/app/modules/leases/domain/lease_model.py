@@ -6,7 +6,7 @@ import enum
 import uuid
 from datetime import UTC, datetime
 
-from sqlalchemy import DateTime, String, func
+from sqlalchemy import DateTime, String, func, Index, text, Enum as SqlEnum
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.database import Base
@@ -51,15 +51,25 @@ class Lease(Base):
 
     __tablename__ = "leases"
 
+    __table_args__ = (
+        Index(
+            "ix_leases_active_plot", 
+            "plot_id", 
+            unique=True, 
+            sqlite_where=text("status = 'active'"), 
+            postgresql_where=text("status = 'active'")
+        ),
+    )
+
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     plot_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
     player_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
 
     status: Mapped[LeaseStatus] = mapped_column(
-        String(50), nullable=False, default=LeaseStatus.DRAFT
+        SqlEnum(LeaseStatus), nullable=False, default=LeaseStatus.DRAFT
     )
-    service_package: Mapped[ServicePackage] = mapped_column(String(50), nullable=False)
-    harvest_policy: Mapped[HarvestPolicy] = mapped_column(String(50), nullable=False)
+    service_package: Mapped[ServicePackage] = mapped_column(SqlEnum(ServicePackage), nullable=False)
+    harvest_policy: Mapped[HarvestPolicy] = mapped_column(SqlEnum(HarvestPolicy), nullable=False)
 
     start_time: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     expected_end_time: Mapped[datetime | None] = mapped_column(
@@ -84,7 +94,7 @@ class Lease(Base):
             raise ValueError(f"Cannot submit lease from status {self.status}")
         self.status = LeaseStatus.PENDING_PAYMENT_OR_APPROVAL
 
-    def activate(self) -> None:
+    def activate(self, existing_leases: list["Lease"]) -> None:
         """
         Move from PENDING_PAYMENT_OR_APPROVAL to ACTIVE.
         Must be validated against business rule:
@@ -92,6 +102,11 @@ class Lease(Base):
         """
         if self.status != LeaseStatus.PENDING_PAYMENT_OR_APPROVAL:
             raise ValueError(f"Cannot activate lease from status {self.status}")
+            
+        for lease in existing_leases:
+            if lease.id != self.id and lease.status == LeaseStatus.ACTIVE:
+                raise ValueError(f"Plot {self.plot_id} already has an active lease.")
+                
         self.status = LeaseStatus.ACTIVE
         self.start_time = datetime.now(UTC)
 

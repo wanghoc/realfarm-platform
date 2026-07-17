@@ -6,7 +6,7 @@ import enum
 import uuid
 from datetime import UTC, datetime
 
-from sqlalchemy import DateTime, String, func
+from sqlalchemy import DateTime, String, func, Index, text, Enum as SqlEnum
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.database import Base
@@ -32,13 +32,23 @@ class CropCycle(Base):
 
     __tablename__ = "crop_cycles"
 
+    __table_args__ = (
+        Index(
+            "ix_crop_cycles_active_plot", 
+            "plot_id", 
+            unique=True, 
+            sqlite_where=text("status NOT IN ('closed', 'failed', 'cancelled')"), 
+            postgresql_where=text("status NOT IN ('closed', 'failed', 'cancelled')")
+        ),
+    )
+
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     plot_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
     lease_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
     crop_catalog_id: Mapped[str] = mapped_column(String(36), nullable=False)
 
     status: Mapped[CropCycleStatus] = mapped_column(
-        String(50), nullable=False, default=CropCycleStatus.PLANNED
+        SqlEnum(CropCycleStatus), nullable=False, default=CropCycleStatus.PLANNED
     )
 
     planted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
@@ -59,7 +69,7 @@ class CropCycle(Base):
 
     # --- State Machine Transitions ---
 
-    def plant(self) -> None:
+    def plant(self, existing_cycles: list["CropCycle"]) -> None:
         """
         Move from PLANNED to PLANTED.
         Must be validated against business rule:
@@ -67,6 +77,16 @@ class CropCycle(Base):
         """
         if self.status != CropCycleStatus.PLANNED:
             raise ValueError(f"Cannot plant from status {self.status}")
+            
+        terminal_states = {
+            CropCycleStatus.CLOSED,
+            CropCycleStatus.FAILED,
+            CropCycleStatus.CANCELLED,
+        }
+        for cycle in existing_cycles:
+            if cycle.id != self.id and cycle.status not in terminal_states:
+                raise ValueError(f"Plot {self.plot_id} already has an active crop cycle.")
+                
         self.status = CropCycleStatus.PLANTED
         self.planted_at = datetime.now(UTC)
 
