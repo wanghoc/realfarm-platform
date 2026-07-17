@@ -11,20 +11,36 @@
 
 Normative keywords `MUST`, `SHOULD`, and `MAY` follow `docs/02_BUSINESS_RULES.md`.
 
+## At a glance
+
+- **Reported (#64):** at least three documents give different value sets for "the state of
+  a player action," and nothing detects when they drift apart.
+- **Finding:** the values do **not** conflict. They belong to **three layers** that were
+  never named (table below). Comparing a value from one layer against a value from another
+  only *looks* like a contradiction.
+- **Fixed here:** named the three layers, gave each one authority document, wrote the
+  outcome → display mapping (§5), and corrected one sequence diagram in
+  `docs/04_DOMAIN_MODEL.md` that drew mutually-exclusive outcomes as a sequence.
+- **Still needs a decision (not code):** §6.1 `requires_expert_review` has no player
+  display value; §6.2 `rejected` is missing from `work-order.v1`. Both wait on @wanghoc.
+
+| Layer | Answers | Values | Authority document |
+|---|---|---|---|
+| **Policy decision outcome** | What did the policy decide about this request? | 6 | `docs/02_BUSINESS_RULES.md` |
+| **Request lifecycle state** | Where is this request row in its life? | 11 | `docs/04_DOMAIN_MODEL.md` |
+| **Player display status** | What does the player see in the UI? | 5 | `AGENTS.md` §7 |
+
+The rest of this document is the detail behind that table: one section per layer (§2–§4),
+the mapping (§5), the open questions (§6), and the commands that re-check it all (§7).
+
 ## 1. Why this document exists
 
 Issue #64 reported that several documents describe "the state of a player action" with
 different value sets, and that nothing detects divergence.
 
-Auditing every occurrence showed the values do **not** conflict. They belong to **three
-different layers** that were never named, so a reader comparing two of them across layers
-sees a contradiction that is not there:
-
-| Layer | Answers | Values |
-|---|---|---|
-| **Policy decision outcome** | "What did the policy decide about this request?" | 6 |
-| **Request lifecycle state** | "Where is this request row in its life?" | 11 |
-| **Player display status** | "What does the player see in the UI?" | 5 |
+Auditing every occurrence showed the values do **not** conflict. They belong to the three
+layers named in the table at the top of this document, so a reader comparing two of them
+across layers sees a contradiction that is not there.
 
 Within each layer, every source already agrees. The gaps are that the layers were not
 named, that the mapping between them was never written down, and that one diagram in
