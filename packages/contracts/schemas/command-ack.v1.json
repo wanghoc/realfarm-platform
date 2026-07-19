@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "realfarm.command-ack.v1",
+  "title": "Command Ack v1",
+  "type": "object",
+  "required": [
+    "commandId",
+    "plotId",
+    "status",
+    "ackAt"
+  ],
+  "properties": {
+    "commandId": {
+      "type": "string"
+    },
+    "plotId": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "acknowledged",
+        "running",
+        "succeeded",
+        "rejected_by_gateway",
+        "timed_out",
+        "failed",
+        "stopped_by_watchdog",
+        "cancelled"
+      ]
+    },
+    "actualDurationSeconds": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "detail": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "ackAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false
+}

@@ -22,6 +22,19 @@ class CommandSource(StrEnum):
     emergency = "emergency"
 
 
+class CommandStatus(StrEnum):
+    """Final or interim state a gateway reports for a command (``AGENTS.md`` §8)."""
+
+    acknowledged = "acknowledged"
+    running = "running"
+    succeeded = "succeeded"
+    rejected_by_gateway = "rejected_by_gateway"
+    timed_out = "timed_out"
+    failed = "failed"
+    stopped_by_watchdog = "stopped_by_watchdog"
+    cancelled = "cancelled"
+
+
 class AutomationCommandV1(CamelModel):
     """One actuator command, matching ``realfarm.automation-command.v1``."""
 
@@ -38,3 +51,18 @@ class AutomationCommandV1(CamelModel):
     watchdog_deadline_at: datetime | None = None
     policy_version: int | None = None
     source_request_id: str | None = None
+
+
+class CommandAckV1(CamelModel):
+    """Gateway acknowledgement / final device state, matching ``realfarm.command-ack.v1``.
+
+    A command with no ack becomes ``timed_out`` upstream — silence is a failure, not a
+    success (``AGENTS.md`` §8).
+    """
+
+    command_id: str
+    plot_id: str
+    status: CommandStatus
+    ack_at: datetime
+    actual_duration_seconds: int | None = None
+    detail: str | None = None

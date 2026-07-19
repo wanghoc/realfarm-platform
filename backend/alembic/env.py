@@ -23,6 +23,7 @@ from app.modules.auth.domain.refresh_token_model import RefreshToken  # noqa: F4
 
 # Import all models so Alembic can discover them
 from app.modules.auth.domain.user_model import User  # noqa: F401
+from app.modules.telemetry.domain.measurement_model import Measurement  # noqa: F401
 
 config = context.config
 

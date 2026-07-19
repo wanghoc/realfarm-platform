@@ -36,6 +36,9 @@ from app.modules.notifications.api.router import router as notifications_router
 from app.modules.player_actions.api.router import router as player_actions_router
 from app.modules.plots.api.router import router as plots_router
 from app.modules.telemetry.api.router import router as telemetry_router
+
+# ORM model — registered so Base.metadata.create_all builds the measurements table.
+from app.modules.telemetry.domain.measurement_model import Measurement  # noqa: F401
 from app.modules.traceability.api.router import router as traceability_router
 from app.modules.users.api.router import router as users_router
 from app.modules.work_orders.api.router import router as work_orders_router
