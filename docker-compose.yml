@@ -72,9 +72,21 @@ services:
 
   simulator:
     build:
-      context: ./backend/services/simulator
-      dockerfile: Dockerfile
+      context: ./backend/services
+      dockerfile: simulator/Dockerfile
     container_name: realfarm-simulator
+    env_file: .env
+    environment:
+      MQTT_HOST: mqtt
+    depends_on:
+      mqtt:
+        condition: service_healthy
+
+  gateway:
+    build:
+      context: ./backend/services
+      dockerfile: gateway/Dockerfile
+    container_name: realfarm-gateway
     env_file: .env
     environment:
       MQTT_HOST: mqtt
