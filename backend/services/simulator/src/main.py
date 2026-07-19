@@ -2,7 +2,9 @@
 RealFarm IoT simulator.
 
 Publishes synthetic sensor telemetry over MQTT at regular intervals and listens
-for commands using the same topic contract as the real gateway.
+for commands using the same topic contract as the real gateway. Connection and
+topic construction come from ``common.mqtt`` so the simulator and the gateway
+cannot drift apart (``AGENTS.md`` §8).
 
 MQTT topic schema:
   realfarm/plots/{plot_id}/telemetry     sensor readings
@@ -17,9 +19,16 @@ import random
 from datetime import UTC, datetime
 
 import aiomqtt
+from common.mqtt import (
+    QOS,
+    MqttConfig,
+    ack_topic,
+    client,
+    commands_topic,
+    plot_id_from_topic,
+    telemetry_topic,
+)
 
-MQTT_HOST = os.getenv("MQTT_HOST", "localhost")
-MQTT_PORT = int(os.getenv("MQTT_PORT", "1883"))
 TELEMETRY_INTERVAL_SECONDS = int(os.getenv("TELEMETRY_INTERVAL_SECONDS", "10"))
 
 SIMULATED_PLOTS = ["plot-001", "plot-002"]
@@ -55,24 +64,24 @@ def generate_telemetry(plot_id: str) -> dict:
     }
 
 
-async def publish_telemetry(client: aiomqtt.Client) -> None:
+async def publish_telemetry(mqtt: aiomqtt.Client) -> None:
     """Publish telemetry for all simulated plots at regular intervals."""
     while True:
         for plot_id in SIMULATED_PLOTS:
             payload = generate_telemetry(plot_id)
-            topic = f"realfarm/plots/{plot_id}/telemetry"
-            await client.publish(topic, json.dumps(payload), qos=1)
+            topic = telemetry_topic(plot_id)
+            await mqtt.publish(topic, json.dumps(payload), qos=QOS)
             print(f"[simulator] Published telemetry to {topic}")
         await asyncio.sleep(TELEMETRY_INTERVAL_SECONDS)
 
 
-async def listen_commands(client: aiomqtt.Client) -> None:
+async def listen_commands(mqtt: aiomqtt.Client) -> None:
     """Listen for actuator commands and publish final acknowledgements."""
     for plot_id in SIMULATED_PLOTS:
-        await client.subscribe(f"realfarm/plots/{plot_id}/commands", qos=1)
+        await mqtt.subscribe(commands_topic(plot_id), qos=QOS)
         print(f"[simulator] Subscribed to commands for {plot_id}")
 
-    async for message in client.messages:
+    async for message in mqtt.messages:
         topic = str(message.topic)
         try:
             command = json.loads(message.payload)
@@ -83,24 +92,25 @@ async def listen_commands(client: aiomqtt.Client) -> None:
         print(f"[simulator] Received command: {command}")
 
         await asyncio.sleep(2)
-        plot_id = topic.split("/")[2]
+        plot_id = plot_id_from_topic(topic)
         ack = {
             "command_id": command.get("command_id", "unknown"),
             "plot_id": plot_id,
             "status": "succeeded",
             "timestamp": datetime.now(UTC).isoformat(),
         }
-        await client.publish(f"realfarm/plots/{plot_id}/ack", json.dumps(ack), qos=1)
+        await mqtt.publish(ack_topic(plot_id), json.dumps(ack), qos=QOS)
         print(f"[simulator] Sent ACK for command {ack['command_id']}")
 
 
 async def main() -> None:
-    print(f"[simulator] Connecting to MQTT broker at {MQTT_HOST}:{MQTT_PORT}")
-    async with aiomqtt.Client(hostname=MQTT_HOST, port=MQTT_PORT) as client:
+    config = MqttConfig.from_env()
+    print(f"[simulator] Connecting to MQTT broker at {config.host}:{config.port}")
+    async with client(config) as mqtt:
         print("[simulator] Connected. Starting telemetry and command listener.")
         await asyncio.gather(
-            publish_telemetry(client),
-            listen_commands(client),
+            publish_telemetry(mqtt),
+            listen_commands(mqtt),
         )
 
 
