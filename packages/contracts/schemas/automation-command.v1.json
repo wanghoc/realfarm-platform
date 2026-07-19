@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "realfarm.automation-command.v1",
+  "title": "Automation Command v1",
+  "type": "object",
+  "required": [
+    "commandId",
+    "plotId",
+    "actuatorId",
+    "commandType",
+    "source",
+    "reason",
+    "idempotencyKey",
+    "issuedAt"
+  ],
+  "properties": {
+    "commandId": {
+      "type": "string"
+    },
+    "plotId": {
+      "type": "string"
+    },
+    "actuatorId": {
+      "type": "string"
+    },
+    "commandType": {
+      "type": "string"
+    },
+    "parameters": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "automation",
+        "operator",
+        "player_request",
+        "emergency"
+      ]
+    },
+    "reason": {
+      "type": "string"
+    },
+    "idempotencyKey": {
+      "type": "string"
+    },
+    "requestedDurationSeconds": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "watchdogDeadlineAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "policyVersion": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "sourceRequestId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "issuedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false
+}

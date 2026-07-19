@@ -1,39 +1,19 @@
 """Player action requests module router.
 
-A player action is always a REQUEST.
-Policy result MUST be one of:
-  accepted_for_automation | accepted_for_work_order |
-  scheduled | rejected | requires_expert_review | expired
-
-Response MUST include a human-readable reason.
+A player action is always a REQUEST. The policy engine evaluates it and returns exactly
+one outcome plus a human-readable reason (ADR-0003; ``docs/15_ACTION_CATALOG.md``). The
+six outcomes live in ``PolicyOutcome`` (see api/schemas.py) so the router, the engine,
+and the catalog cannot drift apart.
 """
 
-from typing import Annotated, Literal
+from typing import Annotated
 
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel
 
 from app.core.security import TokenPayload, get_current_user
+from app.modules.player_actions.api.schemas import ActionRequestBody, PolicyDecision, PolicyOutcome
 
 router = APIRouter(prefix="/player-action-requests", tags=["player-actions"])
-
-
-class ActionRequestBody(BaseModel):
-    plot_id: str
-    action_type: str  # e.g. "water", "inspect", "nutrient_check"
-    notes: str | None = None
-
-
-class PolicyDecision(BaseModel):
-    result: Literal[
-        "accepted_for_automation",
-        "accepted_for_work_order",
-        "scheduled",
-        "rejected",
-        "requires_expert_review",
-        "expired",
-    ]
-    reason: str
 
 
 @router.post("")
@@ -44,10 +24,11 @@ async def submit_action_request(
     """
     Submit a player action request.
     The policy engine evaluates and returns a decision.
-    TODO: implement policy engine and work-order creation.
+    TODO: wire ActionPolicyEngine.evaluate() (Weeks 7-8) and work-order creation.
     """
     return PolicyDecision(
-        result="scheduled", reason="Scaffold placeholder — policy engine not yet implemented."
+        result=PolicyOutcome.scheduled,
+        reason="Scaffold placeholder — policy engine not yet implemented.",
     )
 
 
