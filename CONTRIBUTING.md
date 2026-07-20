@@ -7,8 +7,8 @@
 Examples:
 
 ```text
-quang/task-42-plot-lease
-antigravity/task-57-watering-policy
+hoc/task-42-plot-lease
+bao/task-57-watering-policy
 ```
 
 Avoid a long-lived `develop` branch unless the team explicitly adopts one later.
