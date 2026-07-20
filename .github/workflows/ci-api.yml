@@ -36,8 +36,8 @@ jobs:
         working-directory: backend
         run: ruff format --check .
 
-  import-check:
-    name: Import & Startup Check
+  migrate-and-import:
+    name: Migrations & Import Check
     runs-on: ubuntu-latest
     needs: lint-and-type-check
 
@@ -56,6 +56,16 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
+    env:
+      DB_TYPE: postgres
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: realfarm_ci
+      POSTGRES_USER: realfarm
+      POSTGRES_PASSWORD: ci_password
+      JWT_SECRET: ci_test_secret_do_not_use_in_prod
+      APP_ENV: ci
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -71,14 +81,14 @@ jobs:
         working-directory: backend
         run: pip install -r requirements.txt
 
+      # Runs every migration against a real TimescaleDB, so the measurements
+      # hypertable migration (create_hypertable) is exercised in CI, not just
+      # SQLite. Uses the `alembic` CLI (not `python -m alembic`, which has no
+      # __main__).
+      - name: Run database migrations (Alembic + TimescaleDB)
+        working-directory: backend
+        run: alembic upgrade head
+
       - name: Verify app imports correctly
         working-directory: backend
-        env:
-          APP_ENV: ci
-          POSTGRES_HOST: localhost
-          POSTGRES_PORT: 5432
-          POSTGRES_DB: realfarm_ci
-          POSTGRES_USER: realfarm
-          POSTGRES_PASSWORD: ci_password
-          JWT_SECRET: ci_test_secret_do_not_use_in_prod
         run: python -c "from app.main import app; print('App import OK')"
