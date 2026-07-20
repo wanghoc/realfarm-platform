@@ -1,6 +1,13 @@
 # Gateway
 
-The gateway connects MQTT, sensors, actuators, and camera/media capture.
+The gateway connects MQTT, sensors, actuators, and camera/media capture. It is the only
+component allowed to drive real hardware.
+
+> **Status: not implemented yet.** `src/` is an empty placeholder and there is no
+> `gateway` service in `docker-compose.yml`. Until the gateway exists,
+> `backend/services/simulator` is the reference implementation of the contract below —
+> it is a first-class component, not a temporary mock (`AGENTS.md` §2). Anything the
+> gateway will do must be exercised against the simulator first.
 
 ## Responsibilities
 
@@ -14,4 +21,58 @@ The gateway connects MQTT, sensors, actuators, and camera/media capture.
 - report final device state;
 - buffer temporarily during network loss.
 
-The gateway contract must match the simulator contract.
+## Contract
+
+The gateway and the simulator MUST implement the **same** contract (`AGENTS.md` §8), so
+that swapping one for the other changes nothing upstream. That contract has two halves.
+
+### Payload
+
+Telemetry follows `packages/contracts/schemas/iot-measurement.v1.json`: one measurement
+per message, carrying `messageId`, `deviceId`, `sensorType`, `value`, `unit`,
+`measuredAt`, and `quality`.
+
+`quality` MUST be one of `valid`, `suspect`, or `invalid`. The gateway MUST NOT drop a
+suspicious reading or relabel it as valid — the backend quarantines it
+(`docs/17_ERD_TELEMETRY_AUTOMATION_WORK_ORDERS.md` §3.3). Filtering at the edge would
+destroy the evidence an incident review needs.
+
+### Topics
+
+| Topic | Direction | Purpose |
+|---|---|---|
+| `realfarm/plots/{plot_id}/telemetry` | gateway → backend | sensor readings |
+| `realfarm/plots/{plot_id}/commands` | backend → gateway | validated actuator commands |
+| `realfarm/plots/{plot_id}/ack` | gateway → backend | acknowledgement and final state |
+
+See `backend/services/simulator/README.md` for the message shapes currently on the wire.
+
+## Rules this component must not break
+
+From `AGENTS.md` §8 and `docs/02_BUSINESS_RULES.md`:
+
+- **Commands arrive validated.** The gateway never evaluates player intent; the policy
+  engine already did (ADR-0003). Its job is to execute or refuse, not to judge.
+- **Acknowledge every command** and report the final device state. A command with no ack
+  becomes `timed_out` upstream — silence is a failure, not a success.
+- **Honor idempotency keys.** A redelivered command with a key already seen MUST NOT run
+  the actuator a second time.
+- **Enforce watchdog limits locally.** The ceiling is stored upstream in
+  `actuators.max_duration_seconds`, but the gateway MUST stop an actuator on its own if
+  the backend disappears mid-run. A pump that outlives its network connection is the
+  failure this guards against.
+- **Every sensor value carries** timestamp, device identity, unit, and quality status.
+- **Buffer during network loss** and replay on reconnect; `messageId` makes replay safe.
+
+## Development
+
+There is nothing to run yet. To work against the same contract today:
+
+```bash
+docker compose up -d mqtt simulator
+docker compose exec mqtt mosquitto_sub -t 'realfarm/#' -v   # watch live traffic
+```
+
+When implementing the gateway, keep it and `backend/services/simulator/src/main.py` in
+step. If the two drift, the simulator stops being a valid stand-in and every test built
+on it becomes misleading.
