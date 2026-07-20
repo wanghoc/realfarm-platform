@@ -27,11 +27,13 @@ from app.modules.automation.api.router import router as automation_router
 from app.modules.care_logs.api.router import router as care_logs_router
 from app.modules.crop_catalog.api.router import router as crop_catalog_router
 from app.modules.crop_cycles.api.router import router as crop_cycles_router
+from app.modules.crop_cycles.domain.crop_cycle_model import CropCycle  # noqa: F401
 from app.modules.deliveries.api.router import router as deliveries_router
 from app.modules.farms.api.router import router as farms_router
 from app.modules.harvests.api.router import router as harvests_router
 from app.modules.incidents.api.router import router as incidents_router
 from app.modules.leases.api.router import router as leases_router
+from app.modules.leases.domain.lease_model import Lease  # noqa: F401
 from app.modules.notifications.api.router import router as notifications_router
 from app.modules.player_actions.api.router import router as player_actions_router
 from app.modules.plots.api.router import router as plots_router

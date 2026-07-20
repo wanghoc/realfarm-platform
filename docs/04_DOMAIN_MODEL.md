@@ -66,23 +66,32 @@ Represents player intent, never a direct hardware command.
 States:
 
 ```text
-submitted
-→ evaluating
-→ accepted_for_automation
-→ scheduled
-→ completed
+submitted → evaluating → <one policy outcome> → completed | failed | cancelled
 ```
 
-Alternative states:
+The middle stage is the policy decision, and it is exactly **one** of the six mutually
+exclusive outcomes fixed by `docs/02_BUSINESS_RULES.md`:
 
 ```text
+accepted_for_automation
 accepted_for_work_order
-requires_expert_review
+scheduled
 rejected
+requires_expert_review
 expired
-cancelled
-failed
 ```
+
+`accepted_for_automation` and `scheduled` are alternatives to each other, not consecutive
+steps — a policy returns one or the other. Terminal states after a decision:
+
+```text
+completed   the accepted work finished
+failed      accepted, but execution did not succeed
+cancelled   withdrawn by the player
+```
+
+`docs/19_STATE_VOCABULARY.md` maps these onto the policy outcomes and onto the five
+player-facing display values required by `AGENTS.md` §7.
 
 ### WorkOrder
 
