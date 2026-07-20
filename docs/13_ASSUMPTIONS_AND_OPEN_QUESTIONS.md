@@ -5,7 +5,7 @@ These items must be reviewed before implementation becomes irreversible.
 ## Commercial model
 
 - What is the plot size?
-- Is the lease priced per crop cycle, month, or service package?
+- Is the lease priced per crop cycle, month, or service package? *(Note: The `ServicePackage` and `HarvestPolicy` enums with values like `BASIC`/`FULL_SERVICE`/`PREMIUM` and `ALL_TO_PLAYER`/`SHARED`/`MARKET_SELL` have been temporarily defined to support the MVP models, but this remains an open question pending a final business decision.)*
 - How many manual requests are included?
 - Are extra requests chargeable?
 - Is a minimum yield guaranteed?
