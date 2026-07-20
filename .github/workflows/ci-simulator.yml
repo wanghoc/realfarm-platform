@@ -1,14 +1,16 @@
-name: CI - Simulator
+name: CI - Simulator & Gateway
 
 on:
   pull_request:
     paths:
       - "backend/services/simulator/**"
+      - "backend/services/gateway/**"
+      - "backend/services/common/**"
       - ".github/workflows/ci-simulator.yml"
 
 jobs:
-  lint-and-import:
-    name: Lint & Import Check
+  import-check:
+    name: Import Check
     runs-on: ubuntu-latest
 
     steps:
@@ -23,9 +25,15 @@ jobs:
           cache-dependency-path: backend/services/simulator/requirements.txt
 
       - name: Install dependencies
-        working-directory: backend/services/simulator
-        run: pip install -r requirements.txt
+        run: |
+          pip install -r backend/services/simulator/requirements.txt
+          pip install -r backend/services/gateway/requirements.txt
 
-      - name: Verify simulator imports
-        working-directory: backend/services/simulator
-        run: python -c "import src.main; print('Simulator import OK')"
+      # Run from the services root so the shared `common` package is importable,
+      # matching the Docker build (context backend/services) and the standalone
+      # `python -m simulator.src.main` documented in the service READMEs.
+      - name: Verify simulator & gateway import
+        working-directory: backend/services
+        run: |
+          python -c "import simulator.src.main; print('Simulator import OK')"
+          python -c "import gateway.src.main; print('Gateway import OK')"
