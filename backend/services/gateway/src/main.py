@@ -33,7 +33,10 @@ async def listen_commands(mqtt: aiomqtt.Client) -> None:
         topic = str(message.topic)
         try:
             command = json.loads(message.payload)
-        except json.JSONDecodeError:
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            # payload is bytes; non-UTF-8 raises UnicodeDecodeError, which is
+            # NOT a JSONDecodeError. Anonymous publishers can send garbage, so
+            # both must be swallowed rather than kill the listener task.
             print(f"[gateway] Malformed command on {topic}")
             continue
 

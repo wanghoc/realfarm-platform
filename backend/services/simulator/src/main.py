@@ -85,8 +85,16 @@ async def listen_commands(mqtt: aiomqtt.Client) -> None:
         topic = str(message.topic)
         try:
             command = json.loads(message.payload)
-        except json.JSONDecodeError:
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            # payload is bytes; non-UTF-8 raises UnicodeDecodeError, which is
+            # NOT a JSONDecodeError. Swallow both so junk cannot kill the task.
             print(f"[simulator] Malformed command on {topic}")
+            continue
+
+        if not isinstance(command, dict):
+            # Valid JSON that is not an object (e.g. 123, "x", []) has no
+            # .get(); guard before command.get(...) below would raise.
+            print(f"[simulator] Ignoring non-object command on {topic}")
             continue
 
         print(f"[simulator] Received command: {command}")
