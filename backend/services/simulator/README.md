@@ -2,7 +2,8 @@
 
 The simulator is mandatory, not a temporary mock. Hardware unavailability must not block
 development (`AGENTS.md` §2), so the simulator — not the gateway — is what the backend is
-built and tested against today. `backend/services/gateway` is still an empty placeholder.
+built and tested against today. `backend/services/gateway` is now a subscribe-only
+skeleton (it logs commands but does not drive hardware or ack yet).
 
 It must:
 
@@ -13,6 +14,10 @@ It must:
 - support deterministic scenarios for smoke checks and demo validation;
 - simulate offline and suspicious-sensor conditions.
 
+Connection settings and topic construction come from the shared `common/mqtt.py`
+(`backend/services/common`), which the gateway imports too — the same contract in one
+place (`AGENTS.md` §8).
+
 ## Run
 
 With the stack (recommended — starts the MQTT broker too):
@@ -22,12 +27,13 @@ docker compose up -d mqtt simulator
 docker compose logs -f simulator
 ```
 
-Standalone against a local broker:
+Standalone against a local broker — run from `backend/services` so the shared `common/`
+package is importable:
 
 ```bash
-cd backend/services/simulator
-pip install -r requirements.txt
-MQTT_HOST=localhost python -m src.main
+cd backend/services
+pip install -r simulator/requirements.txt
+MQTT_HOST=localhost python -m simulator.src.main
 ```
 
 Watch what it publishes:

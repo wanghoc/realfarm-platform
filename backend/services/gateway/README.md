@@ -3,11 +3,13 @@
 The gateway connects MQTT, sensors, actuators, and camera/media capture. It is the only
 component allowed to drive real hardware.
 
-> **Status: not implemented yet.** `src/` is an empty placeholder and there is no
-> `gateway` service in `docker-compose.yml`. Until the gateway exists,
-> `backend/services/simulator` is the reference implementation of the contract below —
-> it is a first-class component, not a temporary mock (`AGENTS.md` §2). Anything the
-> gateway will do must be exercised against the simulator first.
+> **Status: subscribe-only skeleton.** It connects to the broker and logs every command on
+> `realfarm/plots/+/commands`, and there is now a `gateway` service in
+> `docker-compose.yml`. It does not drive hardware, honor idempotency keys, enforce
+> watchdog limits, or acknowledge commands yet — those land in Weeks 7-8
+> (`docs/10_ROADMAP_16_WEEKS.md`). Until then `backend/services/simulator` is the reference
+> implementation of the contract below — a first-class component, not a temporary mock
+> (`AGENTS.md` §2). Both import their topics and connection from the shared `common/mqtt.py`.
 
 ## Responsibilities
 
@@ -64,15 +66,22 @@ From `AGENTS.md` §8 and `docs/02_BUSINESS_RULES.md`:
 - **Every sensor value carries** timestamp, device identity, unit, and quality status.
 - **Buffer during network loss** and replay on reconnect; `messageId` makes replay safe.
 
-## Development
+## Run
 
-There is nothing to run yet. To work against the same contract today:
+The skeleton subscribes and logs; it does not drive hardware yet.
 
 ```bash
-docker compose up -d mqtt simulator
-docker compose exec mqtt mosquitto_sub -t 'realfarm/#' -v   # watch live traffic
+docker compose up -d mqtt gateway
+docker compose logs -f gateway
 ```
 
-When implementing the gateway, keep it and `backend/services/simulator/src/main.py` in
-step. If the two drift, the simulator stops being a valid stand-in and every test built
-on it becomes misleading.
+Watch live traffic (the simulator drives the same topics today):
+
+```bash
+docker compose exec mqtt mosquitto_sub -t 'realfarm/#' -v
+```
+
+When implementing hardware behavior, keep the gateway and
+`backend/services/simulator/src/main.py` in step — both import from `common/mqtt.py`, so
+the contract stays in one place. If the two drift, the simulator stops being a valid
+stand-in and every test built on it becomes misleading.
