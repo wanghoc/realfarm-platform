@@ -3,7 +3,7 @@
 An actuator command carries a hard time limit so a device cannot outlive its command
 (``AGENTS.md`` §8: "Add watchdog limits for actuators"). This module defines only the
 interface; the durable enforcement job and the per-actuator ceilings land in Weeks 7-8
-(``docs/10_ROADMAP_16_WEEKS.md``). Design rationale: ADR-0005.
+(``docs/10_ROADMAP_16_WEEKS.md``). Design rationale: ADR-0006.
 """
 
 from abc import ABC, abstractmethod
@@ -15,7 +15,7 @@ from app.modules.automation.api.schemas import AutomationCommandV1
 class Watchdog(ABC):
     """Computes and enforces the deadline past which an actuator MUST be stopped.
 
-    Two layers enforce the same ceiling (ADR-0005):
+    Two layers enforce the same ceiling (ADR-0006):
 
     - the gateway stops the actuator locally even if the backend is unreachable;
     - a durable backend job stops it and records ``stopped_by_watchdog`` if no final

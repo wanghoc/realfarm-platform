@@ -32,7 +32,10 @@
       "type": "string"
     },
     "parameters": {
-      "type": "object"
+      "type": [
+        "object",
+        "null"
+      ]
     },
     "requestedAt": {
       "type": "string",

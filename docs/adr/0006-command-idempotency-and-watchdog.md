@@ -1,4 +1,4 @@
-# ADR 0005 — Actuator Command Idempotency and Watchdog Enforcement
+# ADR 0006 — Actuator Command Idempotency and Watchdog Enforcement
 
 - Status: Proposed
 

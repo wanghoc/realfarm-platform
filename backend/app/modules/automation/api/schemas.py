@@ -4,7 +4,7 @@
 — the validated command the backend publishes to the gateway/simulator on
 ``realfarm/plots/{plot_id}/commands``. Every command carries an idempotency key so a
 retried publish never double-runs an actuator, and a watchdog deadline so a device
-cannot outlive its command (``AGENTS.md`` §8). Design rationale: ADR-0005.
+cannot outlive its command (``AGENTS.md`` §8). Design rationale: ADR-0006.
 """
 
 from datetime import datetime

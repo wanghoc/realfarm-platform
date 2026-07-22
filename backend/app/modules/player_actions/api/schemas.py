@@ -30,7 +30,11 @@ class PolicyOutcome(StrEnum):
 
 
 class ActionCategory(StrEnum):
-    """How far a player is allowed to drive an action (``docs/15_ACTION_CATALOG.md`` §3)."""
+    """How far a player is allowed to drive an action (``docs/15_ACTION_CATALOG.md`` §3).
+
+    Defined ahead of use: the policy engine consumes it in Weeks 7-8. Not yet
+    referenced elsewhere (scaffold).
+    """
 
     automation_eligible = "automation_eligible"  # A — policy may execute within limits
     manual_work = "manual_work"  # B — always becomes a work order
