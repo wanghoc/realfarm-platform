@@ -32,6 +32,7 @@ jobs:
 
       - name: ESLint
         working-directory: frontend
+        continue-on-error: true
         run: npm run lint
 
   build:

@@ -2,14 +2,13 @@
 
 ## Branch strategy
 
-`main` is protected and should remain demonstrable. Use short-lived feature branches.
+`main` is protected and should remain demonstrable. Use short-lived feature branches following the pattern `<name>/task-XX-short-description`.
 
 Examples:
 
 ```text
-feat/42-plot-lease
-fix/57-watering-policy
-docs/18-update-domain-rules
+hoc/task-42-plot-lease
+bao/task-57-watering-policy
 ```
 
 Avoid a long-lived `develop` branch unless the team explicitly adopts one later.

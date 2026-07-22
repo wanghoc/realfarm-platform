@@ -26,3 +26,8 @@ known-first-party = ["app"]
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
+
+[tool.pytest.ini_options]
+# Run from backend/; "." puts the package root on sys.path so `import app` works.
+pythonpath = ["."]
+testpaths = ["tests"]
