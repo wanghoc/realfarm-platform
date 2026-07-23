@@ -8,12 +8,13 @@ Policy result MUST be one of:
 Response MUST include a human-readable reason.
 """
 
-from typing import Annotated, Literal
+from typing import Annotated
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
 from app.core.security import TokenPayload, get_current_user
+from app.modules.player_actions.application.policy import PolicyDecision, PolicyResult
 
 router = APIRouter(prefix="/player-action-requests", tags=["player-actions"])
 
@@ -22,18 +23,6 @@ class ActionRequestBody(BaseModel):
     plot_id: str
     action_type: str  # e.g. "water", "inspect", "nutrient_check"
     notes: str | None = None
-
-
-class PolicyDecision(BaseModel):
-    result: Literal[
-        "accepted_for_automation",
-        "accepted_for_work_order",
-        "scheduled",
-        "rejected",
-        "requires_expert_review",
-        "expired",
-    ]
-    reason: str
 
 
 @router.post("")
@@ -47,7 +36,8 @@ async def submit_action_request(
     TODO: implement policy engine and work-order creation.
     """
     return PolicyDecision(
-        result="scheduled", reason="Scaffold placeholder — policy engine not yet implemented."
+        result=PolicyResult.scheduled,
+        reason="Scaffold placeholder — policy engine not yet implemented.",
     )
 
 

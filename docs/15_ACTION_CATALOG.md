@@ -27,7 +27,7 @@ Player request
 ## 2. Policy outcomes
 
 The policy result MUST be one of the following six values (matches the
-`PolicyDecision` enum in `player_actions/api/router.py`):
+`PolicyResult` enum in `player_actions/application/policy.py`):
 
 | Outcome | Meaning | Downstream effect | Owner module |
 |---|---|---|---|
