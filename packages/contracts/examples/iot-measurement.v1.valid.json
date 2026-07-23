@@ -1,0 +1,11 @@
+{
+  "messageId": "m-2026-0001",
+  "deviceId": "dev-sensor-node-01",
+  "plotId": "plot-001",
+  "sensorType": "soil_moisture",
+  "value": 28.4,
+  "unit": "percent",
+  "measuredAt": "2026-07-23T06:15:00Z",
+  "quality": "valid",
+  "signature": null
+}

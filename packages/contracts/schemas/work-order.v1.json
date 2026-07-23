@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "realfarm.work-order.v1",
   "title": "Work Order v1",
+  "description": "A batch of on-site tasks assigned to an operator. Groups one or more items, each bound to exactly one plot and crop cycle so per-plot traceability survives batching (docs/16_OPERATOR_WORKFLOW.md).",
   "type": "object",
   "required": [
     "workOrderId",
@@ -12,7 +13,9 @@
   ],
   "properties": {
     "workOrderId": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "description": "Opaque public id of the work order."
     },
     "status": {
       "type": "string",
@@ -25,7 +28,8 @@
         "verified",
         "blocked",
         "cancelled"
-      ]
+      ],
+      "description": "Lifecycle state. NOTE: docs/04_DOMAIN_MODEL.md and docs/16_OPERATOR_WORKFLOW.md also use 'rejected' (operator declines an assignment); it is intentionally absent here pending Học's decision (docs/17_ERD_TELEMETRY_AUTOMATION_WORK_ORDERS.md §4.1, docs/13_ASSUMPTIONS_AND_OPEN_QUESTIONS.md). Until resolved, the contract keeps this narrower set."
     },
     "priority": {
       "type": "string",
@@ -34,30 +38,43 @@
         "normal",
         "high",
         "urgent"
-      ]
+      ],
+      "description": "Scheduling priority."
     },
     "assigneeId": {
       "type": [
         "string",
         "null"
-      ]
+      ],
+      "description": "Opaque public id of the assigned operator. Null until assigned."
+    },
+    "statusReason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Human-readable reason. Required in practice for blocked or cancelled orders (docs/17 §2)."
     },
     "dueFrom": {
       "type": [
         "string",
         "null"
       ],
-      "format": "date-time"
+      "format": "date-time",
+      "description": "Start of the due window (RFC 3339 / ISO 8601 UTC), if scheduled."
     },
     "dueTo": {
       "type": [
         "string",
         "null"
       ],
-      "format": "date-time"
+      "format": "date-time",
+      "description": "End of the due window (RFC 3339 / ISO 8601 UTC), if scheduled."
     },
     "items": {
       "type": "array",
+      "minItems": 1,
+      "description": "The tasks grouped by this order. At least one item.",
       "items": {
         "type": "object",
         "required": [
@@ -67,19 +84,33 @@
         ],
         "properties": {
           "plotId": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "description": "Opaque public id of the plot this item is scoped to (exactly one)."
           },
           "cropCycleId": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "description": "Opaque public id of the crop cycle this item is scoped to (exactly one)."
           },
           "taskType": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "pest_inspection",
+              "general_inspection",
+              "nutrient_check",
+              "manual_watering",
+              "pruning",
+              "treatment"
+            ],
+            "description": "Kind of on-site task. Allowed set from docs/17_ERD_TELEMETRY_AUTOMATION_WORK_ORDERS.md (work_order_items.task_type); maps from Category B/C actionTypes in docs/15_ACTION_CATALOG.md."
           },
           "sourceRequestId": {
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "description": "Opaque public id of the player_action_request that caused this item, if any, so the player can be shown the outcome."
           }
         },
         "additionalProperties": false
@@ -87,7 +118,8 @@
     },
     "createdAt": {
       "type": "string",
-      "format": "date-time"
+      "format": "date-time",
+      "description": "When the work order was created (RFC 3339 / ISO 8601 UTC)."
     }
   },
   "additionalProperties": false

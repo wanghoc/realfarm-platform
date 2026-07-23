@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "realfarm.player-action-request.v1",
   "title": "Player Action Request v1",
+  "description": "A player-submitted request evaluated by the action policy engine. A request is never a direct actuator command (ADR-0003); the policy returns exactly one outcome and a reason. actionType values are the allowed set defined in docs/15_ACTION_CATALOG.md.",
   "type": "object",
   "required": [
     "requestId",
@@ -14,35 +15,67 @@
   ],
   "properties": {
     "requestId": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "description": "Producer-assigned unique id for this request."
     },
     "playerId": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "description": "Opaque public id of the player making the request."
     },
     "leaseId": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "description": "Opaque public id of the active lease that authorizes this action."
     },
     "plotId": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "description": "Opaque public id of the target plot."
     },
     "cropCycleId": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "description": "Opaque public id of the crop cycle the action applies to."
     },
     "actionType": {
-      "type": "string"
+      "type": "string",
+      "enum": [
+        "request_extra_watering",
+        "skip_scheduled_watering",
+        "adjust_ventilation",
+        "toggle_grow_light",
+        "request_camera_snapshot",
+        "request_pest_inspection",
+        "request_general_inspection",
+        "soil_nutrient_check",
+        "request_manual_watering_visit",
+        "request_pruning",
+        "request_treatment",
+        "request_early_harvest",
+        "request_crop_change",
+        "request_pickup",
+        "request_delivery",
+        "report_problem"
+      ],
+      "description": "Stable action code. The allowed set is docs/15_ACTION_CATALOG.md §4 (categories A-D). lower_snake_case, English only (AGENTS.md §5). A value outside this enum fails contract validation; a value inside it may still be rejected by the policy engine with a reason."
     },
     "parameters": {
-      "type": "object"
+      "type": "object",
+      "description": "Action-specific parameters (e.g. durationSeconds, mode). Kept as a free object for now; typed per-action shapes are a future refinement (docs/15_ACTION_CATALOG.md §6). Safety-sensitive values such as duration are always re-capped server-side, never trusted from here."
     },
     "requestedAt": {
       "type": "string",
-      "format": "date-time"
+      "format": "date-time",
+      "description": "When the player submitted the request (RFC 3339 / ISO 8601 UTC)."
     },
     "idempotencyKey": {
       "type": [
         "string",
         "null"
-      ]
+      ],
+      "description": "Client-supplied retry key. A repeated key MUST NOT create a duplicate command or work order (AGENTS.md §8)."
     }
   },
   "additionalProperties": false

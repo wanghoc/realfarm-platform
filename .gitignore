@@ -63,3 +63,6 @@ backups/
 # Logs
 *.log
 logs/
+
+# Temp / scratch (local working notes, PR drafts, etc.)
+temp/

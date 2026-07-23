@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "realfarm.harvest-record.v1",
   "title": "Harvest Record v1",
+  "description": "The result of harvesting a crop cycle: weighed output, quality acceptance, and safety status, linked to the lease so the player's harvest entitlement can be computed. Field set to be cross-reviewed with Học's lease/harvest ERD (issue #6).",
   "type": "object",
   "required": [
     "harvestId",
@@ -14,29 +15,39 @@
   ],
   "properties": {
     "harvestId": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "description": "Opaque public id of the harvest record."
     },
     "cropCycleId": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "description": "Opaque public id of the harvested crop cycle."
     },
     "leaseId": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "description": "Opaque public id of the lease this harvest is credited to (drives player entitlement)."
     },
     "harvestedAt": {
       "type": "string",
-      "format": "date-time"
+      "format": "date-time",
+      "description": "When the harvest was recorded (RFC 3339 / ISO 8601 UTC)."
     },
     "totalWeightKg": {
       "type": "number",
-      "minimum": 0
+      "minimum": 0,
+      "description": "Total weighed output in kilograms."
     },
     "acceptedWeightKg": {
       "type": "number",
-      "minimum": 0
+      "minimum": 0,
+      "description": "Portion accepted after quality check, in kilograms. Relationship acceptedWeightKg + rejectedWeightKg <= totalWeightKg is a business rule enforced at write time, not in this schema."
     },
     "rejectedWeightKg": {
       "type": "number",
-      "minimum": 0
+      "minimum": 0,
+      "description": "Portion rejected at quality check, in kilograms."
     },
     "safetyStatus": {
       "type": "string",
@@ -45,13 +56,16 @@
         "accepted",
         "held",
         "rejected"
-      ]
+      ],
+      "description": "Food-safety disposition of the harvest. 'held' means quarantined pending review; only 'accepted' produce may be released to the player."
     },
     "evidenceIds": {
       "type": "array",
       "items": {
-        "type": "string"
-      }
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Opaque public ids of evidence records (weighing photos, quality notes) supporting this harvest."
     }
   },
   "additionalProperties": false

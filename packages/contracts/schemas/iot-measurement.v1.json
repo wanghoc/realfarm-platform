@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "realfarm.iot-measurement.v1",
   "title": "IoT Measurement v1",
+  "description": "One sensor reading published by a gateway or the simulator. Carries exactly one sensorType + value + unit per message (not a batch); see docs/17_ERD_TELEMETRY_AUTOMATION_WORK_ORDERS.md §3.2.",
   "type": "object",
   "required": [
     "messageId",
@@ -14,16 +15,21 @@
   ],
   "properties": {
     "messageId": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "description": "Producer-assigned unique id. Dedupe key: a redelivered MQTT message with the same messageId MUST NOT create a second row."
     },
     "deviceId": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "description": "Opaque public id of the device that produced the reading."
     },
     "plotId": {
       "type": [
         "string",
         "null"
-      ]
+      ],
+      "description": "Opaque public id of the plot the reading belongs to. Null for farm-level devices not bound to a single plot."
     },
     "sensorType": {
       "type": "string",
@@ -33,17 +39,22 @@
         "soil_moisture",
         "light",
         "ph"
-      ]
+      ],
+      "description": "Kind of measurement. light and ph are optional hardware per docs/01_SCOPE_AND_NON_GOALS.md."
     },
     "value": {
-      "type": "number"
+      "type": "number",
+      "description": "Numeric reading. Range is validated per sensorType by the ingest use case, not by this contract."
     },
     "unit": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "description": "Measurement unit. MUST match sensorType (docs/07_DATA_MODEL_GUIDE.md); that cross-field rule is enforced at ingest, not in this schema."
     },
     "measuredAt": {
       "type": "string",
-      "format": "date-time"
+      "format": "date-time",
+      "description": "When the sensor took the reading (RFC 3339 / ISO 8601 UTC)."
     },
     "quality": {
       "type": "string",
@@ -51,13 +62,15 @@
         "valid",
         "suspect",
         "invalid"
-      ]
+      ],
+      "description": "Ingest quality. Only 'valid' rows feed /latest, policy decisions, or automation; suspect/invalid rows are quarantined evidence, never silently dropped (AGENTS.md §8)."
     },
     "signature": {
       "type": [
         "string",
         "null"
-      ]
+      ],
+      "description": "Optional integrity proof for the reading."
     }
   },
   "additionalProperties": false

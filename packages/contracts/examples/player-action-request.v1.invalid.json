@@ -1,0 +1,9 @@
+{
+  "requestId": "req-2026-0002",
+  "playerId": "player-abc",
+  "leaseId": "lease-001",
+  "plotId": "plot-001",
+  "cropCycleId": "cycle-001",
+  "actionType": "open_the_pod_bay_doors",
+  "requestedAt": "2026-07-23T06:20:00Z"
+}
