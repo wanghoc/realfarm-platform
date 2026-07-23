@@ -1,0 +1,14 @@
+{
+  "harvestId": "harvest-2026-0001",
+  "cropCycleId": "cycle-001",
+  "leaseId": "lease-001",
+  "harvestedAt": "2026-07-23T07:00:00Z",
+  "totalWeightKg": 12.5,
+  "acceptedWeightKg": 11.0,
+  "rejectedWeightKg": 1.5,
+  "safetyStatus": "accepted",
+  "evidenceIds": [
+    "evidence-weigh-01",
+    "evidence-quality-01"
+  ]
+}

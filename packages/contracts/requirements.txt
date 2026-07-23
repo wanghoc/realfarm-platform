@@ -1,0 +1,2 @@
+# Tooling for validating the shared contracts (see validate.py).
+jsonschema>=4.20

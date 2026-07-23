@@ -1,0 +1,14 @@
+{
+  "requestId": "req-2026-0001",
+  "playerId": "player-abc",
+  "leaseId": "lease-001",
+  "plotId": "plot-001",
+  "cropCycleId": "cycle-001",
+  "actionType": "request_extra_watering",
+  "parameters": {
+    "durationSeconds": 90,
+    "zone": "north"
+  },
+  "requestedAt": "2026-07-23T06:20:00Z",
+  "idempotencyKey": "k-req-2026-0001"
+}

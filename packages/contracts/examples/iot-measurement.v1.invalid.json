@@ -1,0 +1,10 @@
+{
+  "messageId": "m-2026-0002",
+  "deviceId": "dev-sensor-node-01",
+  "plotId": "plot-001",
+  "sensorType": "co2",
+  "value": 28.4,
+  "unit": "percent",
+  "measuredAt": "2026-07-23T06:15:00Z",
+  "quality": "ok"
+}

@@ -60,15 +60,25 @@ realfarm-platform/
 |  |- 12_SECURITY_AND_PRIVACY.md
 |  |- 13_ASSUMPTIONS_AND_OPEN_QUESTIONS.md
 |  |- 14_GLOSSARY.md
+|  |- 15_ACTION_CATALOG.md
+|  |- 16_OPERATOR_WORKFLOW.md
+|  |- 17_ERD_TELEMETRY_AUTOMATION_WORK_ORDERS.md
+|  |- 18_ACCEPTANCE_TESTS_TELEMETRY_AUTOMATION.md
+|  |- 19_STATE_VOCABULARY.md
 |  |- AI_AGENT_PLAYBOOK.md
 |  |- API_GUIDELINES.md
+|  |- CONTRIBUTOR_WORKFLOW.md
+|  |- KE_HOACH_16_TUAN_CHI_TIET_VI.md
 |  |- PROJECT_SUMMARY_VI.md
-|  `- adr/
-|     |- 0001-modular-monolith.md
-|     |- 0002-plot-based-ownership.md
-|     |- 0003-policy-controlled-player-actions.md
-|     |- 0004-blockchain-optional-extension.md
-|     `- README.md
+|  |- adr/
+|  |  |- 0001-modular-monolith.md
+|  |  |- 0002-plot-based-ownership.md
+|  |  |- 0003-policy-controlled-player-actions.md
+|  |  |- 0004-blockchain-optional-extension.md
+|  |  |- 0005-ai-leaf-disease-mvp-candidate.md
+|  |  `- README.md
+|  `- wireframes/
+|     `- player-states.md
 |- infra/
 |  |- blockchain/
 |  |- database/
