@@ -77,18 +77,18 @@ def _wire_schema(model: type[BaseModel]) -> dict:
 def test_property_names_match(model: type[BaseModel], contract_file: str) -> None:
     contract = _load(contract_file)
     model_props = set(_wire_schema(model)["properties"])
-    assert model_props == set(contract["properties"]), (
-        f"{model.__name__} field set drifted from {contract_file}"
-    )
+    assert model_props == set(
+        contract["properties"]
+    ), f"{model.__name__} field set drifted from {contract_file}"
 
 
 @pytest.mark.parametrize(("model", "contract_file"), MIRRORS)
 def test_required_fields_match(model: type[BaseModel], contract_file: str) -> None:
     contract = _load(contract_file)
     model_required = set(_wire_schema(model).get("required", []))
-    assert model_required == set(contract.get("required", [])), (
-        f"{model.__name__} required set drifted from {contract_file}"
-    )
+    assert model_required == set(
+        contract.get("required", [])
+    ), f"{model.__name__} required set drifted from {contract_file}"
 
 
 @pytest.mark.parametrize(("model", "contract_file"), MIRRORS)

@@ -36,7 +36,11 @@ alone. Enforcement is two-layer:
    and records `stopped_by_watchdog` if no final acknowledgement arrives by the deadline.
 
 The deadline is an absolute timestamp rather than a relative duration precisely so it
-survives a process restart and can be enforced by a durable job.
+survives a process restart and can be enforced by a durable job. For that to hold, every
+timestamp on these command contracts — `issuedAt`, `requestedAt`, and `watchdogDeadlineAt`
+— MUST be UTC and timezone-aware. A naive (offset-less) timestamp carries no zone, so two
+processes in different timezones read the same wall-clock string as different instants and
+the deadline is no longer truly absolute.
 
 The interfaces that encode this decision ship in this change: `AutomationCommandV1`
 (`automation/api/schemas.py`), the `Watchdog` interface (`automation/application/watchdog.py`),
@@ -75,3 +79,7 @@ and the `ActionPolicyEngine` interface (`player_actions/application/policy.py`).
   storage cost.
 - Whether `request_camera_snapshot` flows through this command path or the `media` module
   directly (mirrors the open question in `docs/15_ACTION_CATALOG.md` §7).
+- Timezone enforcement in code: the Weeks 7-8 runtime MUST reject naive (offset-less)
+  `issuedAt` / `requestedAt` / `watchdogDeadlineAt` values. `Draft202012Validator` does not
+  assert `format: date-time`, so tz-awareness is a code-level check the models and gateway
+  own, not something the JSON Schema enforces on its own.
